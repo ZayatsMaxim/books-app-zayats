@@ -32,6 +32,11 @@
   box-sizing: border-box;
 }
 
+/* Резерв под вертикальный скроллбар — без горизонтального сдвига при появлении прокрутки */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -52,260 +57,33 @@ h2 {
   min-height: 100svh;
 }
 
-.app-shell {
-  min-height: 100svh;
-}
-
 .container {
   width: min(var(--container), 100%);
   margin: 0 auto;
   padding: 0 20px;
 }
 
-.topbar {
-  height: 44px;
-  border-bottom: 1px solid var(--border);
-  background: color-mix(in oklab, var(--bg) 92%, var(--code-bg));
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.topbar__inner {
-  height: 44px;
-  display: flex;
-  align-items: center;
-}
-
-.topbar__brand {
-  font-family: var(--heading);
-  font-weight: 800;
-  letter-spacing: -0.2px;
-  color: var(--text-h);
-}
-
-.hero {
-  text-align: center;
-  padding: 56px 0 28px;
-}
-
-.hero__title {
-  margin: 0;
-  font-size: 44px;
-  letter-spacing: -1px;
-}
-
-@media (max-width: 1024px) {
-  .hero__title {
-    font-size: 34px;
-  }
-}
-
-.hero__subtitle {
-  margin: 14px auto 0;
-  max-width: 860px;
-  color: var(--text);
-}
-
-.search-placeholder {
-  margin: 26px auto 0;
-  width: min(780px, 100%);
-  display: grid;
-  grid-template-columns: 1fr 140px;
-  gap: 10px;
-}
-
-.search-placeholder__input,
-.search-placeholder__button {
-  height: 44px;
-  border-radius: 10px;
-}
-
-.layout {
-  display: grid;
-  grid-template-columns: 5fr 1fr;
-  gap: 18px;
-  padding: 20px 0 56px;
-  align-items: start;
-}
-
-/* Stack only on narrow screens */
-@media (max-width: 720px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-.section-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.section-title {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: -0.2px;
-}
-
-.section-hint {
-  font-size: 13px;
-  color: var(--text);
-}
-
-.books-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.books-loading {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 14px;
-}
-
-@media (max-width: 1024px) {
-  .books-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .books-loading {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .books-grid {
-    grid-template-columns: 1fr;
-  }
-  .books-loading {
-    grid-template-columns: 1fr;
-  }
-}
-
-.book-card {
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: color-mix(in oklab, var(--bg) 96%, var(--code-bg));
-  overflow: hidden;
-}
-
-.book-card__cover {
-  position: relative;
-  background: color-mix(in oklab, var(--border) 30%, var(--bg));
-  height: 400px;
-  overflow: hidden;
-}
-
-.book-card__cover-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-}
-
-.book-card__bookmark {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: color-mix(in oklab, var(--bg) 88%, var(--code-bg));
-  color: var(--text-h);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-}
-
-.book-card__bookmark:hover {
-  border-color: var(--accent-border);
-}
-
-.book-card__bookmark:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.material-icons {
-  font-size: 20px;
-  line-height: 1;
-}
-
-.book-card__body {
-  padding: 12px;
-  display: grid;
-  gap: 6px;
-}
-
-.book-card__title-text {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-h);
-  line-height: 1.2;
-}
-
-.book-card__author,
-.book-card__year {
-  font-size: 13px;
-  color: var(--text);
-}
-
-.book-card__author {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.favorites {
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: color-mix(in oklab, var(--bg) 96%, var(--code-bg));
-  padding: 12px;
-  position: sticky;
-  top: 64px;
-}
-
-@media (max-width: 720px) {
-  .favorites {
-    position: static;
-  }
-}
-
-.favorites__placeholder {
-  display: grid;
-  gap: 10px;
-  padding-top: 4px;
-}
-
-.favorites__row {
-  height: 12px;
-  border-radius: 8px;
-}
-
+/* Utility: shimmer used by home page placeholders and card skeletons */
+/* linear: без замедления на стыке цикла; ease-in-out даёт рывок при infinite */
 .skeleton {
   background: linear-gradient(
-    90deg,
-    color-mix(in oklab, var(--border) 55%, var(--bg)) 0%,
-    color-mix(in oklab, var(--border) 35%, var(--bg)) 50%,
-    color-mix(in oklab, var(--border) 55%, var(--bg)) 100%
+    100deg,
+    color-mix(in oklab, var(--border) 62%, var(--bg)) 0%,
+    color-mix(in oklab, var(--border) 62%, var(--bg)) 36%,
+    color-mix(in oklab, var(--border) 22%, var(--bg)) 50%,
+    color-mix(in oklab, var(--border) 62%, var(--bg)) 64%,
+    color-mix(in oklab, var(--border) 62%, var(--bg)) 100%
   );
   background-size: 200% 100%;
-  animation: skeleton 1.2s ease-in-out infinite;
+  animation: skeleton-shimmer 3.2s linear infinite;
 }
 
-@keyframes skeleton {
+/* Один полный проход фона за цикл — стык 0%/100% менее заметен при linear */
+@keyframes skeleton-shimmer {
   0% {
-    background-position: 0% 0%;
+    background-position: 200% 0;
   }
   100% {
-    background-position: -200% 0%;
+    background-position: -200% 0;
   }
 }

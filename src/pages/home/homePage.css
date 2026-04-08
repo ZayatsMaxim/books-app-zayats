@@ -1,0 +1,251 @@
+.app-shell {
+  min-height: 100svh;
+}
+
+.topbar {
+  height: 44px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--bg) 92%, var(--code-bg));
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar__inner {
+  height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.topbar__brand {
+  font-family: var(--heading);
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--text-h);
+}
+
+.hero {
+  text-align: center;
+  padding: 56px 0 28px;
+}
+
+.hero__title {
+  margin: 0;
+  font-size: 44px;
+  letter-spacing: -1px;
+}
+
+@media (max-width: 1024px) {
+  .hero__title {
+    font-size: 34px;
+  }
+}
+
+.hero__subtitle {
+  margin: 14px auto 0;
+  max-width: 860px;
+  color: var(--text);
+}
+
+.hero__search-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.hero__search {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.hero__search .search {
+  margin-top: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 5fr 1fr;
+  gap: 18px;
+  padding: 20px 0 56px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Избранное сверху, карточки ниже */
+  .layout__left {
+    order: 2;
+  }
+
+  .layout__right {
+    order: 1;
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: -0.2px;
+}
+
+.section-hint {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* Пустой запрос / не найдено / ошибка: прежняя высота, контент по центру экрана по горизонтали */
+.books-grid.books-grid--empty,
+.books-grid.books-grid--not-found,
+.books-grid.books-grid--error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 24px 16px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  box-sizing: border-box;
+}
+
+.books-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 420px;
+}
+
+.books-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 420px;
+}
+
+.books-not-found__icon {
+  font-size: 128px;
+  line-height: 1;
+  color: color-mix(in oklab, var(--text) 28%, var(--bg));
+  user-select: none;
+}
+
+.books-not-found__text {
+  margin: 20px 0 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.books-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 420px;
+}
+
+.books-error__icon {
+  font-size: 128px;
+  line-height: 1;
+  color: #d32f2f;
+  opacity: 0.55;
+  user-select: none;
+}
+
+.books-error__text {
+  margin: 20px 0 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #c62828;
+}
+
+.books-empty__icon {
+  font-size: 128px;
+  line-height: 1;
+  color: color-mix(in oklab, var(--text) 28%, var(--bg));
+  user-select: none;
+}
+
+.books-empty__text {
+  margin: 20px 0 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.books-loading {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+@media (max-width: 1024px) {
+  .books-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .books-loading {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .books-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .books-loading {
+    grid-template-columns: 1fr;
+  }
+}
+
+.favorites {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--bg) 96%, var(--code-bg));
+  padding: 12px;
+  position: sticky;
+  top: 64px;
+}
+
+@media (max-width: 720px) {
+  .favorites {
+    position: static;
+  }
+}
+
+.favorites__placeholder {
+  display: grid;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.favorites__row {
+  height: 12px;
+  border-radius: 8px;
+}

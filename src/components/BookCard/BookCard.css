@@ -1,0 +1,121 @@
+.book-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--bg) 96%, var(--code-bg));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.book-card__cover {
+  position: relative;
+  height: 400px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* Иначе фон перебивает градиент и анимацию из .skeleton (style.css) */
+.book-card__cover:not(.skeleton) {
+  background: color-mix(in oklab, var(--border) 30%, var(--bg));
+}
+
+.book-card__cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.book-card__bookmark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--bg) 88%, var(--code-bg));
+  color: var(--text-h);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.book-card__bookmark:hover {
+  border-color: var(--accent-border);
+}
+
+.book-card__bookmark:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.book-card .material-icons {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.book-card__body {
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-height: 130px;
+  box-sizing: border-box;
+}
+
+.book-card__body--skeleton {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 130px;
+  align-content: start;
+  row-gap: 6px;
+}
+
+/* Skeleton: те же три строки, что и описание (заголовок / автор / год) */
+.book-card__skel-line {
+  border-radius: 8px;
+  max-width: 100%;
+}
+
+/* как .book-card__title-text: 16px, line-height 1.2 */
+.book-card__skel-line--title {
+  height: calc(16px * 1.2);
+  width: 92%;
+}
+
+/* как .book-card__author: 13px */
+.book-card__skel-line--author {
+  height: 13px;
+  width: 88%;
+}
+
+/* как .book-card__year: 13px, короче */
+.book-card__skel-line--year {
+  height: 13px;
+  width: 40%;
+}
+
+.book-card__title-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-h);
+  line-height: 1.2;
+}
+
+.book-card__author,
+.book-card__year {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.book-card__author {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

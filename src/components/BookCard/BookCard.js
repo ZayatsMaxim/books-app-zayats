@@ -1,3 +1,5 @@
+import './BookCard.css'
+
 export function BookCard({ book }) {
   const el = document.createElement('article')
   el.className = 'book-card'
@@ -41,4 +43,3 @@ export function BookCard({ book }) {
   el.append(coverWrap, body)
   return el
 }
-

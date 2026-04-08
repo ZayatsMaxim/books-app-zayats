@@ -1,5 +1,7 @@
 .app-shell {
   min-height: 100svh;
+  display: flex;
+  flex-direction: column;
 }
 
 .topbar {
@@ -22,6 +24,14 @@
   font-weight: 800;
   letter-spacing: -0.2px;
   color: var(--text-h);
+}
+
+main.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
 }
 
 .hero {
@@ -49,81 +59,92 @@
 
 .hero__search-block {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  margin-top: 26px;
+  justify-content: center;
+  gap: 16px 24px;
+  width: 100%;
+  max-width: min(1126px, 100%);
+  margin: 26px auto 0;
 }
 
 .hero__search {
   display: flex;
   justify-content: center;
-  width: 100%;
+  flex: 1 1 0%;
+  min-width: min(280px, 100%);
 }
 
 .hero__search .search {
-  margin-top: 0;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero__favorites {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  position: relative;
+  z-index: 20;
 }
 
 .layout {
-  display: grid;
-  grid-template-columns: 5fr 1fr;
-  gap: 18px;
   padding: 20px 0 56px;
-  align-items: start;
+  min-width: 0;
+  --books-grid-gap: 14px;
 }
 
 @media (max-width: 720px) {
-  .layout {
-    grid-template-columns: 1fr;
+  .hero__search-block {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  /* Избранное сверху, карточки ниже */
-  .layout__left {
-    order: 2;
+  .hero__search {
+    flex-basis: auto;
   }
 
-  .layout__right {
-    order: 1;
+  .hero__favorites {
+    width: 100%;
   }
-}
-
-.section-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.section-title {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: -0.2px;
-}
-
-.section-hint {
-  font-size: 13px;
-  color: var(--text);
 }
 
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--books-grid-gap);
 }
 
-/* Пустой запрос / не найдено / ошибка: прежняя высота, контент по центру экрана по горизонтали */
+@media (max-width: 1100px) {
+  .books-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .books-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .books-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Пустой запрос / не найдено / ошибка: по центру и по вертикали, и по горизонтали в секции */
 .books-grid.books-grid--empty,
 .books-grid.books-grid--not-found,
 .books-grid.books-grid--error {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 280px;
+  width: 100%;
+  min-height: 0;
   padding: 24px 16px;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
   box-sizing: border-box;
 }
 
@@ -131,7 +152,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
   max-width: 420px;
 }
@@ -140,7 +160,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
   max-width: 420px;
 }
@@ -163,7 +182,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
   max-width: 420px;
 }
@@ -199,53 +217,25 @@
 
 .books-loading {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--books-grid-gap);
   margin-top: 14px;
 }
 
-@media (max-width: 1024px) {
-  .books-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 1100px) {
+  .books-loading {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
+@media (max-width: 800px) {
   .books-loading {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 640px) {
-  .books-grid {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 520px) {
   .books-loading {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
-}
-
-.favorites {
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: color-mix(in oklab, var(--bg) 96%, var(--code-bg));
-  padding: 12px;
-  position: sticky;
-  top: 64px;
-}
-
-@media (max-width: 720px) {
-  .favorites {
-    position: static;
-  }
-}
-
-.favorites__placeholder {
-  display: grid;
-  gap: 10px;
-  padding-top: 4px;
-}
-
-.favorites__row {
-  height: 12px;
-  border-radius: 8px;
 }

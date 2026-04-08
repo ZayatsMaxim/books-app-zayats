@@ -1,45 +1,53 @@
 import './BookCard.css'
 
+import { isFavorite, toggleFavorite } from '../../storage/favoritesStorage.js'
+
+import bookCardHtml from './html/book-card.html?raw'
+
+const tpl = document.createElement('template')
+tpl.innerHTML = bookCardHtml.trim()
+
+function syncBookmarkButton(btn, iconEl, bookId) {
+  if (!bookId) return
+  const active = isFavorite(bookId)
+  btn.classList.toggle('book-card__bookmark--active', active)
+  btn.setAttribute('aria-pressed', String(active))
+  btn.setAttribute('aria-label', active ? 'Remove from favorites' : 'Add to favorites')
+  iconEl.textContent = active ? 'bookmark' : 'bookmark_add'
+}
+
 export function BookCard({ book }) {
-  const el = document.createElement('article')
-  el.className = 'book-card'
+  const el = /** @type {HTMLElement} */ (tpl.content.firstElementChild.cloneNode(true))
 
-  const coverWrap = document.createElement('div')
-  coverWrap.className = 'book-card__cover'
-
-  const coverImg = document.createElement('img')
-  coverImg.className = 'book-card__cover-img'
+  const coverImg = el.querySelector('.book-card__cover-img')
   coverImg.src = book.coverUrl || ''
   coverImg.alt = book.title
-  coverImg.loading = 'lazy'
   coverImg.addEventListener('error', () => {
     coverImg.remove()
   })
 
-  const bookmarkBtn = document.createElement('button')
-  bookmarkBtn.type = 'button'
-  bookmarkBtn.className = 'book-card__bookmark'
-  bookmarkBtn.setAttribute('aria-label', 'Add to favorites')
-  bookmarkBtn.innerHTML = `<span class="material-icons" aria-hidden="true">bookmark_add</span>`
+  el.querySelector('.book-card__title-text').textContent = book.title
+  el.querySelector('.book-card__author').textContent = book.author || 'Unknown author'
+  const yearEl = el.querySelector('.book-card__year')
+  yearEl.textContent = book.year ? String(book.year) : ''
 
-  coverWrap.append(coverImg, bookmarkBtn)
+  const btn = el.querySelector('.book-card__bookmark')
+  const iconEl = btn.querySelector('.material-icons')
 
-  const body = document.createElement('div')
-  body.className = 'book-card__body'
+  if (!book?.id) {
+    btn.hidden = true
+    return el
+  }
 
-  const title = document.createElement('h3')
-  title.className = 'book-card__title-text'
-  title.textContent = book.title
+  el.dataset.workId = book.id
 
-  const author = document.createElement('p')
-  author.className = 'book-card__author'
-  author.textContent = book.author || 'Unknown author'
+  syncBookmarkButton(btn, iconEl, book.id)
+  btn.addEventListener('click', (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    toggleFavorite(book)
+    syncBookmarkButton(btn, iconEl, book.id)
+  })
 
-  const year = document.createElement('p')
-  year.className = 'book-card__year'
-  year.textContent = book.year ? String(book.year) : ''
-
-  body.append(title, author, year)
-  el.append(coverWrap, body)
   return el
 }

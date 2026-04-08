@@ -1,34 +1,51 @@
 import './Search.css'
 
+import searchHtml from './html/search.html?raw'
+
 /**
  * Поле поиска по книгам.
- * @param {{ onInput?: (value: string) => void }} [options]
+ * inputBindDelayMs — задержка перед подпиской на input (после восстановления из LS браузер может позже прислать trusted input).
+ * @param {{ onInput?: (value: string) => void, initialValue?: string, inputBindDelayMs?: number, signal?: AbortSignal }} [options]
  */
-export function Search({ onInput } = {}) {
-  const root = document.createElement('div')
-  root.className = 'search'
+export function Search({
+  onInput,
+  initialValue = '',
+  inputBindDelayMs = 0,
+  signal,
+} = {}) {
+  const tpl = document.createElement('template')
+  tpl.innerHTML = searchHtml.trim()
+  const root = /** @type {HTMLDivElement} */ (tpl.content.firstElementChild.cloneNode(true))
 
-  const control = document.createElement('div')
-  control.className = 'search__control'
-
-  const icon = document.createElement('span')
-  icon.className = 'material-icons search__icon'
-  icon.setAttribute('aria-hidden', 'true')
-  icon.textContent = 'search'
-
-  const input = document.createElement('input')
-  input.type = 'search'
-  input.className = 'search__input'
-  input.placeholder = 'Search by title…'
-  input.autocomplete = 'off'
-  input.setAttribute('aria-label', 'Search books by title')
-  input.setAttribute('enterkeyhint', 'search')
+  const input = root.querySelector('.search__input')
+  if (initialValue) input.value = initialValue
 
   if (typeof onInput === 'function') {
-    input.addEventListener('input', () => onInput(input.value))
+    const handler = (e) => {
+      if (!e.isTrusted) return
+      onInput(input.value)
+    }
+
+    const runAttach = () => {
+      input.addEventListener('input', handler, { signal })
+    }
+
+    let bindTimerId = null
+    if (inputBindDelayMs > 0) {
+      bindTimerId = window.setTimeout(runAttach, inputBindDelayMs)
+      if (signal) {
+        signal.addEventListener(
+          'abort',
+          () => {
+            if (bindTimerId != null) window.clearTimeout(bindTimerId)
+          },
+          { once: true },
+        )
+      }
+    } else {
+      runAttach()
+    }
   }
 
-  control.append(icon, input)
-  root.append(control)
   return root
 }

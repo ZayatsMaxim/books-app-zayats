@@ -1,0 +1,25 @@
+<div class="app-shell">
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="topbar__brand">{{PROJECT_NAME}}</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" aria-label="Page header">
+      <h1 class="hero__title">Discover Your Next Great Read</h1>
+      <p class="hero__subtitle">
+        Search millions of books, build your personal library, and never lose track of what to read next
+      </p>
+      <div class="hero__search-block">
+        <div id="heroSearchMount" class="hero__search"></div>
+        <div id="heroFavoritesMount" class="hero__favorites" aria-label="Favorites"></div>
+      </div>
+    </section>
+
+    <section class="layout" aria-label="Main content">
+      <div class="books-grid" id="booksGrid"></div>
+      <div class="books-loading" id="booksLoadingHost" aria-hidden="true"></div>
+    </section>
+  </main>
+</div>

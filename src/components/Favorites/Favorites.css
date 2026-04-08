@@ -1,0 +1,123 @@
+.favorites {
+  position: relative;
+  z-index: 21;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 300px;
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  padding: 0 14px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--bg) 96%, var(--code-bg));
+  box-sizing: border-box;
+}
+
+.favorites__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.favorites__header:hover .favorites__title {
+  color: var(--text-h);
+}
+
+.favorites__header:focus {
+  outline: none;
+}
+
+.favorites__header:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 2px;
+}
+
+.favorites__title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  letter-spacing: -0.2px;
+  font-family: var(--heading);
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.favorites__count {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.favorites__expand-icon {
+  flex-shrink: 0;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text);
+  user-select: none;
+}
+
+.favorites__panel-clip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  width: 100%;
+  min-width: 300px;
+  z-index: 22;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.28s ease;
+}
+
+.favorites:not(.favorites--collapsed) .favorites__panel-clip {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.favorites__panel-sizer {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.favorites__panel {
+  min-width: 0;
+  max-height: min(70vh, 560px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow:
+    0 12px 40px color-mix(in oklab, var(--text) 14%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--border) 50%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favorites__panel-clip {
+    transition-duration: 0.01ms;
+  }
+}

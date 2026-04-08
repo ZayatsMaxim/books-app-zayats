@@ -1,26 +1,28 @@
 import './homePage.css'
 import { BookCard } from '../../components/BookCard/BookCard.js'
+import { Favorites } from '../../components/Favorites/Favorites.js'
 import { Search } from '../../components/Search/Search.js'
 import { searchBooksByTitle } from '../../api/openLibrary.js'
+import { FAVORITES_CHANGED_EVENT, isFavorite } from '../../storage/favoritesStorage.js'
+import {
+  clearSearchSnapshot,
+  normalizeSearchQueryForCompare,
+  readSearchSnapshot,
+  writeSearchSnapshot,
+} from '../../storage/searchStorage.js'
+
+import bookCardSkeletonHtml from './html/book-card-skeleton.html?raw'
+import booksEmptyHtml from './html/books-empty.html?raw'
+import booksErrorHtml from './html/books-error.html?raw'
+import booksNotFoundHtml from './html/books-not-found.html?raw'
+import homeShellHtml from './html/home.shell.html?raw'
 
 const PROJECT_NAME = 'Books App'
 const SEARCH_DEBOUNCE_MS = 350
 
-function getLoadingCardsHtml(count = 9) {
-  return Array.from({ length: count })
-    .map(
-      () => `
-        <article class="book-card" aria-label="Book card placeholder">
-          <div class="book-card__cover skeleton"></div>
-          <div class="book-card__body book-card__body--skeleton">
-            <div class="book-card__skel-line book-card__skel-line--title skeleton" aria-hidden="true"></div>
-            <div class="book-card__skel-line book-card__skel-line--author skeleton" aria-hidden="true"></div>
-            <div class="book-card__skel-line book-card__skel-line--year skeleton" aria-hidden="true"></div>
-          </div>
-        </article>
-      `,
-    )
-    .join('')
+function getLoadingCardsHtml(count = 12) {
+  const chunk = bookCardSkeletonHtml.trim()
+  return Array.from({ length: count }, () => chunk).join('')
 }
 
 function appendBooks({ root, books, seenIds }) {
@@ -34,68 +36,55 @@ function appendBooks({ root, books, seenIds }) {
   root.append(frag)
 }
 
+function syncBookmarkButtonsInGrid(grid) {
+  if (!grid) return
+  for (const card of grid.querySelectorAll('article.book-card[data-work-id]')) {
+    const id = card.dataset.workId
+    const btn = card.querySelector('.book-card__bookmark')
+    const iconEl = btn?.querySelector('.material-icons')
+    if (!btn || !iconEl || !id) continue
+    const active = isFavorite(id)
+    btn.classList.toggle('book-card__bookmark--active', active)
+    btn.setAttribute('aria-pressed', String(active))
+    btn.setAttribute('aria-label', active ? 'Remove from favorites' : 'Add to favorites')
+    iconEl.textContent = active ? 'bookmark' : 'bookmark_add'
+  }
+}
+
 export function mountHomePage(root) {
-  root.innerHTML = `
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="container topbar__inner">
-          <div class="topbar__brand">${PROJECT_NAME}</div>
-        </div>
-      </header>
-
-      <main class="container">
-        <section class="hero" aria-label="Page header">
-          <h1 class="hero__title">Discover Your Next Great Read</h1>
-          <p class="hero__subtitle">
-            Search millions of books, build your personal library, and never lose track of what to read next
-          </p>
-          <div class="hero__search-block">
-            <div id="heroSearchMount" class="hero__search"></div>
-          </div>
-        </section>
-
-        <section class="layout" aria-label="Main content">
-          <div class="layout__left">
-            <div class="books-grid" id="booksGrid"></div>
-            <div class="books-loading" id="booksLoadingHost" aria-hidden="true"></div>
-          </div>
-
-          <aside class="layout__right" aria-label="Favorites">
-            <div class="favorites">
-              <div class="section-header">
-                <h2 class="section-title">Избранное</h2>
-                <span class="section-hint">0</span>
-              </div>
-              <div class="favorites__placeholder">
-                <div class="favorites__row skeleton" style="width: 90%"></div>
-                <div class="favorites__row skeleton" style="width: 75%"></div>
-                <div class="favorites__row skeleton" style="width: 82%"></div>
-                <div class="favorites__row skeleton" style="width: 68%"></div>
-              </div>
-            </div>
-          </aside>
-        </section>
-      </main>
-    </div>
-  `
+  root.innerHTML = homeShellHtml.replace('{{PROJECT_NAME}}', PROJECT_NAME)
 
   const grid = root.querySelector('#booksGrid')
   const loadingHost = root.querySelector('#booksLoadingHost')
   const searchMount = root.querySelector('#heroSearchMount')
+  const favoritesMount = root.querySelector('#heroFavoritesMount')
+  const favoritesAbort = new AbortController()
+  if (favoritesMount) {
+    favoritesMount.append(Favorites({ signal: favoritesAbort.signal }))
+  }
+
+  window.addEventListener(
+    FAVORITES_CHANGED_EVENT,
+    () => syncBookmarkButtonsInGrid(grid),
+    { signal: favoritesAbort.signal },
+  )
 
   const state = {
     query: '',
     page: 1,
-    limit: 9,
+    limit: 12,
     loading: false,
     hasMore: true,
     seenIds: new Set(),
-    /** Увеличивается при новом поиске / сбросе — отбрасываем ответы от старых запросов */
     searchSeq: 0,
     searchAbort: null,
   }
 
   let searchDebounceId = null
+
+  const snapshot = readSearchSnapshot()
+  const restoredQueryKey = snapshot?.query ?? null
+  let ignoreInputMatchingRestoredQuery = restoredQueryKey != null
 
   function abortPendingSearch() {
     state.searchAbort?.abort()
@@ -117,12 +106,7 @@ export function mountHomePage(root) {
     renderBottomLoading(false)
     grid.classList.remove('books-grid--error', 'books-grid--not-found')
     grid.classList.add('books-grid--empty')
-    grid.innerHTML = `
-      <div class="books-empty" role="status">
-        <span class="material-icons books-empty__icon" aria-hidden="true">question_mark</span>
-        <p class="books-empty__text">Type your query in the box above and begin your journey!</p>
-      </div>
-    `
+    grid.innerHTML = booksEmptyHtml.trim()
     loadingHost.innerHTML = ''
   }
 
@@ -131,12 +115,7 @@ export function mountHomePage(root) {
     renderBottomLoading(false)
     grid.classList.remove('books-grid--empty', 'books-grid--error')
     grid.classList.add('books-grid--not-found')
-    grid.innerHTML = `
-      <div class="books-not-found" role="status">
-        <span class="material-icons books-not-found__icon" aria-hidden="true">search_off</span>
-        <p class="books-not-found__text">No books found for your search. Try a different query.</p>
-      </div>
-    `
+    grid.innerHTML = booksNotFoundHtml.trim()
     loadingHost.innerHTML = ''
   }
 
@@ -146,16 +125,22 @@ export function mountHomePage(root) {
     renderBottomLoading(false)
     grid.classList.remove('books-grid--empty', 'books-grid--not-found')
     grid.classList.add('books-grid--error')
-    grid.innerHTML = `
-      <div class="books-error" role="alert">
-        <span class="material-icons books-error__icon" aria-hidden="true">error</span>
-        <p class="books-error__text">Something went wrong... Reload the page and try again.</p>
-      </div>
-    `
+    grid.innerHTML = booksErrorHtml.trim()
     loadingHost.innerHTML = ''
   }
 
   function applySearchFromInput(raw) {
+    if (
+      ignoreInputMatchingRestoredQuery &&
+      restoredQueryKey != null &&
+      normalizeSearchQueryForCompare(raw) === normalizeSearchQueryForCompare(restoredQueryKey)
+    ) {
+      return
+    }
+    if (ignoreInputMatchingRestoredQuery) {
+      ignoreInputMatchingRestoredQuery = false
+    }
+
     const q = raw.trim()
 
     state.query = q
@@ -164,6 +149,7 @@ export function mountHomePage(root) {
     state.hasMore = true
 
     if (!q) {
+      clearSearchSnapshot()
       renderNoQuery()
       return
     }
@@ -171,12 +157,23 @@ export function mountHomePage(root) {
     beginSearchFetchSession()
 
     grid.classList.remove('books-grid--empty', 'books-grid--error', 'books-grid--not-found')
-    grid.innerHTML = getLoadingCardsHtml(9)
+    grid.innerHTML = getLoadingCardsHtml(12)
     loadNextPage()
   }
 
   function scheduleSearchFromInput(raw) {
     const q = raw.trim()
+    if (
+      ignoreInputMatchingRestoredQuery &&
+      restoredQueryKey != null &&
+      normalizeSearchQueryForCompare(raw) === normalizeSearchQueryForCompare(restoredQueryKey)
+    ) {
+      return
+    }
+    if (ignoreInputMatchingRestoredQuery) {
+      ignoreInputMatchingRestoredQuery = false
+    }
+
     if (!q) {
       if (searchDebounceId != null) {
         clearTimeout(searchDebounceId)
@@ -192,16 +189,38 @@ export function mountHomePage(root) {
     }, SEARCH_DEBOUNCE_MS)
   }
 
+  if (snapshot?.query) {
+    state.query = snapshot.query
+    state.seenIds = new Set()
+    if (snapshot.firstPage.length > 0) {
+      state.page = 2
+      state.hasMore = snapshot.firstPage.length >= state.limit
+      grid.classList.remove('books-grid--empty', 'books-grid--error', 'books-grid--not-found')
+      grid.innerHTML = ''
+      appendBooks({ root: grid, books: snapshot.firstPage, seenIds: state.seenIds })
+      syncBookmarkButtonsInGrid(grid)
+      loadingHost.innerHTML = ''
+      beginSearchFetchSession()
+    } else {
+      state.page = 1
+      state.hasMore = false
+      renderNotFound()
+    }
+  } else {
+    renderNoQuery()
+  }
+
   searchMount.append(
     Search({
       onInput: scheduleSearchFromInput,
+      initialValue: snapshot?.query ?? '',
+      inputBindDelayMs: snapshot?.query ? 400 : 0,
+      signal: favoritesAbort.signal,
     }),
   )
 
-  renderNoQuery()
-
   function renderBottomLoading(enabled) {
-    loadingHost.innerHTML = enabled ? getLoadingCardsHtml(3) : ''
+    loadingHost.innerHTML = enabled ? getLoadingCardsHtml(4) : ''
   }
 
   async function loadNextPage() {
@@ -227,6 +246,7 @@ export function mountHomePage(root) {
       if (books.length === 0) {
         state.hasMore = false
         if (state.page === 1) {
+          writeSearchSnapshot({ query: q, firstPage: [] })
           renderNotFound()
         }
         return
@@ -238,7 +258,21 @@ export function mountHomePage(root) {
       }
 
       appendBooks({ root: grid, books, seenIds: state.seenIds })
+
+      if (state.page === 1) {
+        let stored = books
+        try {
+          stored = JSON.parse(JSON.stringify(books))
+        } catch {
+          /* keep reference */
+        }
+        writeSearchSnapshot({ query: q, firstPage: stored })
+      }
+
       state.page += 1
+      if (books.length < state.limit) {
+        state.hasMore = false
+      }
     } catch (e) {
       if (e?.name === 'AbortError') return
       if (seqAtStart !== state.searchSeq) return
@@ -267,11 +301,14 @@ export function mountHomePage(root) {
     { root: null, rootMargin: '600px 0px', threshold: 0 },
   )
 
-  io.observe(sentinel)
+  requestAnimationFrame(() => {
+    io.observe(sentinel)
+  })
 
   return () => {
     if (searchDebounceId != null) clearTimeout(searchDebounceId)
     state.searchAbort?.abort()
+    favoritesAbort.abort()
     io.disconnect()
     root.innerHTML = ''
   }

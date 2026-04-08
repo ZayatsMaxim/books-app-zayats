@@ -45,6 +45,12 @@
   box-shadow: var(--shadow);
 }
 
+.book-card__bookmark--active {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
 .book-card__bookmark:hover {
   border-color: var(--accent-border);
 }

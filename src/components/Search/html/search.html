@@ -1,13 +1,32 @@
 <div class="search">
-  <div class="search__control">
-    <span class="material-icons search__icon" aria-hidden="true">search</span>
-    <input
-      type="search"
-      class="search__input"
-      placeholder="Search by title…"
-      autocomplete="off"
-      aria-label="Search books by title"
-      enterkeyhint="search"
-    />
+  <div class="search__row">
+    <div class="search__control">
+      <span class="material-icons search__icon" aria-hidden="true">search</span>
+      <input
+        type="search"
+        class="search__input"
+        placeholder="Search by title…"
+        autocomplete="off"
+        aria-label="Search books"
+        enterkeyhint="search"
+      />
+    </div>
+    <div class="search__mode-wrap search__mode-wrap--collapsed">
+      <button
+        type="button"
+        class="search__mode-trigger"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-label="Search type"
+      >
+        <span class="search__mode-label">Title</span>
+        <span class="material-icons search__mode-chevron" aria-hidden="true">expand_more</span>
+      </button>
+      <div class="search__mode-menu-clip" aria-hidden="true">
+        <div class="search__mode-menu-sizer">
+          <ul class="search__mode-menu" role="listbox" tabindex="-1"></ul>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

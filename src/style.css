@@ -4,11 +4,8 @@
 :root {
   --container: 1126px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-
   font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
+  letter-spacing: var(--tracking-normal, 0.18px);
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
@@ -25,6 +22,13 @@
 }
 
 /* Theme overrides live in src/themes/*.css */
+
+/* Плавное переключение темы (View Transitions API) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 *,
 *::before,

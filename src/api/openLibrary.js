@@ -32,21 +32,45 @@ function normalizeSearchDoc(doc) {
   }
 }
 
+/** @typedef {'title' | 'author' | 'subject'} SearchMode */
+
+/** @type {readonly SearchMode[]} */
+export const SEARCH_MODES = ['title', 'author', 'subject']
+
+/** @param {SearchMode} mode */
+function searchQueryParam(mode) {
+  if (mode === 'author') return 'author'
+  if (mode === 'subject') return 'subject'
+  return 'title'
+}
+
+/** Набор полей ответа зависит от режима (релевантные Solr-поля). */
+/** @param {SearchMode} mode */
+function fieldsForMode(mode) {
+  const base = 'key,title,author_name,first_publish_year,cover_i,edition_count'
+  if (mode === 'author') return `${base},author_key`
+  if (mode === 'subject') return `${base},subject`
+  return base
+}
+
 /**
- * Search books by title using Open Library Search API.
- * Endpoint: GET https://openlibrary.org/search.json?title=...
+ * Поиск по Open Library: в запросе один из параметров title / author / subject и свой `fields`.
+ *
+ * @param {string} query
+ * @param {{ mode?: SearchMode, limit?: number, page?: number, signal?: AbortSignal }} [options]
  */
-export async function searchBooksByTitle(title, { limit = 24, page = 1, signal } = {}) {
-  const q = String(title ?? '').trim()
+export async function searchBooks(query, { mode = 'title', limit = 24, page = 1, signal } = {}) {
+  const q = String(query ?? '').trim()
   if (!q) return []
 
+  const param = searchQueryParam(mode)
   const url =
     `${OPEN_LIBRARY_BASE_URL}/search.json?` +
     toQuery({
-      title: q,
+      [param]: q,
       page,
       limit,
-      fields: 'key,title,author_name,first_publish_year,cover_i,edition_count',
+      fields: fieldsForMode(mode),
     })
 
   const res = await fetch(url, { signal })

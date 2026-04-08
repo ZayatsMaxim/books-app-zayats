@@ -10,16 +10,44 @@
   background: color-mix(in oklab, var(--bg) 92%, var(--code-bg));
   position: sticky;
   top: 0;
-  z-index: 10;
+  /* выше .favorites (21) и выпадающей панели (22), иначе при скролле избранное наезжает на шапку */
+  z-index: 50;
 }
 
 .topbar__inner {
   height: 44px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.topbar__brand {
+.topbar__brand-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.topbar__logo {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.topbar__logo .material-icons {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.topbar__brand-block .topbar__brand {
+  min-width: 0;
   font-family: var(--heading);
   font-weight: 800;
   letter-spacing: -0.2px;
@@ -36,7 +64,7 @@ main.container {
 
 .hero {
   text-align: center;
-  padding: 56px 0 28px;
+  padding: 106px 0 28px;
 }
 
 .hero__title {

@@ -53,15 +53,76 @@
 }
 
 .favorite-book-list__icon-wrap {
+  position: relative;
   flex-shrink: 0;
   width: 44px;
   height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   border-radius: 6px;
   background: color-mix(in oklab, var(--code-bg) 85%, var(--border));
   border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+}
+
+.favorite-book-list__cover-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 2px;
+  padding: 3px 4px;
+  text-align: center;
+  --h: var(--cover-fallback-hue, 165);
+  background: linear-gradient(
+    142deg,
+    hsl(var(--h) 42% 36%),
+    hsl(calc(var(--h) + 28) 40% 28%)
+  );
+  color: hsl(0 0% 98%);
+}
+
+.favorite-book-list__cover-fallback[hidden] {
+  display: none !important;
+}
+
+.favorite-book-list__cover-fallback-title {
+  margin: 0;
+  font-family: var(--heading);
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1.12;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.favorite-book-list__cover-fallback-author {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 6px;
+  font-weight: 500;
+  line-height: 1.1;
+  opacity: 0.9;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.favorite-book-list__cover {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .favorite-book-list__icon {
@@ -69,6 +130,11 @@
   line-height: 1;
   color: color-mix(in oklab, var(--text) 55%, var(--bg));
   user-select: none;
+}
+
+/* material-icons задаёт display; [hidden] и hidden-атрибут часто не перебивают — скрываем явно */
+.favorite-book-list__icon--hidden {
+  display: none !important;
 }
 
 .favorite-book-list__main {
@@ -114,7 +180,7 @@
   margin: 0;
   padding: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: 50%;
   background: transparent;
   color: var(--accent);
   cursor: pointer;
@@ -131,6 +197,7 @@
 .favorite-book-list__bookmark:focus-visible {
   outline: 2px solid var(--accent-border);
   outline-offset: 2px;
+  border-radius: 50%;
 }
 
 .favorite-book-list__bookmark .material-icons {

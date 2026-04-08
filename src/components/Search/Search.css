@@ -1,6 +1,13 @@
 .search {
   margin: 26px auto 0;
-  width: min(780px, 100%);
+  width: min(900px, 100%);
+}
+
+.search__row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
 }
 
 .search__control {
@@ -8,7 +15,8 @@
   display: flex;
   align-items: stretch;
   gap: 10px;
-  width: 100%;
+  flex: 1 1 0%;
+  min-width: 0;
   height: 44px;
   min-height: 44px;
   max-height: 44px;
@@ -16,7 +24,139 @@
   box-sizing: border-box;
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: var(--bg);
+  background: var(--card);
+}
+
+/* Narrow column; same width on trigger and menu */
+.search__mode-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--search-mode-fixed-width, 136px);
+}
+
+.search__mode-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  margin: 0;
+  padding: 0 12px 0 14px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text-h);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.search__mode-trigger:hover {
+  border-color: color-mix(in oklab, var(--border) 70%, var(--text));
+}
+
+.search__mode-trigger:focus {
+  outline: none;
+}
+
+.search__mode-trigger:focus-visible {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.search__mode-label {
+  min-width: 0;
+  text-align: left;
+}
+
+.search__mode-chevron {
+  flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text);
+  transition: transform 0.2s ease;
+}
+
+.search__mode-wrap:not(.search__mode-wrap--collapsed) .search__mode-chevron {
+  transform: rotate(180deg);
+}
+
+/* Как у .favorites__panel-clip: раскрытие по высоте + opacity */
+.search__mode-menu-clip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  width: 100%;
+  z-index: 40;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.28s ease;
+}
+
+.search__mode-wrap:not(.search__mode-wrap--collapsed) .search__mode-menu-clip {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.search__mode-menu-sizer {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.search__mode-menu {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+  overflow: hidden;
+}
+
+.search__mode-option {
+  margin: 0;
+  padding: 12px 10px;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-h);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.search__mode-option:hover {
+  background: var(--accent-bg);
+}
+
+.search__mode-option[aria-selected='true'] {
+  background: color-mix(in oklab, var(--primary) 16%, var(--card));
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.search__mode-option[aria-selected='true']:hover {
+  background: color-mix(in oklab, var(--primary) 22%, var(--card));
 }
 
 .search__icon {
@@ -54,10 +194,6 @@
   opacity: 0.85;
 }
 
-.search__control:hover {
-  border-color: color-mix(in oklab, var(--border) 70%, var(--text));
-}
-
 .search__input:focus {
   outline: none;
 }
@@ -65,4 +201,10 @@
 .search__control:focus-within {
   border-color: var(--accent-border);
   box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search__mode-menu-clip {
+    transition-duration: 0.01ms;
+  }
 }

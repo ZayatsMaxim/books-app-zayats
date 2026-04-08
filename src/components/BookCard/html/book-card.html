@@ -1,6 +1,10 @@
 <article class="book-card">
   <div class="book-card__cover">
-    <img class="book-card__cover-img" loading="lazy" alt="" />
+    <img class="book-card__cover-img" loading="lazy" alt="" hidden />
+    <div class="book-card__cover-fallback" aria-hidden="true" hidden>
+      <span class="book-card__cover-fallback-title"></span>
+      <span class="book-card__cover-fallback-author"></span>
+    </div>
     <button type="button" class="book-card__bookmark" aria-label="Add to favorites">
       <span class="material-icons" aria-hidden="true">bookmark_add</span>
     </button>

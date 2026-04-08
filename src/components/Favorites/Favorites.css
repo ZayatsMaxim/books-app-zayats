@@ -11,7 +11,7 @@
   padding: 0 14px 0 12px;
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: color-mix(in oklab, var(--bg) 96%, var(--code-bg));
+  background: var(--card);
   box-sizing: border-box;
 }
 
@@ -110,10 +110,34 @@
   padding: 12px;
   border-radius: 14px;
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--card);
   box-shadow:
     0 12px 40px color-mix(in oklab, var(--text) 14%, transparent),
     0 0 0 1px color-mix(in oklab, var(--border) 50%, transparent);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--primary) 40%, var(--border)) var(--muted);
+}
+
+.favorites__panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.favorites__panel::-webkit-scrollbar-track {
+  margin: 4px 0;
+  background: var(--muted);
+  border-radius: 999px;
+}
+
+.favorites__panel::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--primary) 45%, var(--border));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.favorites__panel::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--primary) 65%, var(--border));
+  background-clip: padding-box;
 }
 
 @media (prefers-reduced-motion: reduce) {

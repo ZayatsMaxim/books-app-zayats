@@ -1,6 +1,7 @@
 import './BookCard.css'
 
 import { isFavorite, toggleFavorite } from '../../storage/favoritesStorage.js'
+import { hueFromId } from '../../utils/hueFromId.js'
 
 import bookCardHtml from './html/book-card.html?raw'
 
@@ -19,12 +20,37 @@ function syncBookmarkButton(btn, iconEl, bookId) {
 export function BookCard({ book }) {
   const el = /** @type {HTMLElement} */ (tpl.content.firstElementChild.cloneNode(true))
 
-  const coverImg = el.querySelector('.book-card__cover-img')
-  coverImg.src = book.coverUrl || ''
-  coverImg.alt = book.title
+  const coverImg = /** @type {HTMLImageElement} */ (el.querySelector('.book-card__cover-img'))
+  const coverFallback = /** @type {HTMLDivElement} */ (el.querySelector('.book-card__cover-fallback'))
+  const coverFbTitle = coverFallback?.querySelector('.book-card__cover-fallback-title')
+  const coverFbAuthor = coverFallback?.querySelector('.book-card__cover-fallback-author')
+
+  function showCoverFallback() {
+    if (!coverFallback || !coverFbTitle || !coverFbAuthor) return
+    coverImg.hidden = true
+    coverImg.removeAttribute('src')
+    coverFallback.hidden = false
+    coverFbTitle.textContent = book.title || 'Untitled'
+    coverFbAuthor.textContent = book.author || 'Unknown author'
+    coverFallback.style.setProperty('--cover-fallback-hue', String(hueFromId(book.id)))
+  }
+
+  function tryCoverImage(url) {
+    if (!url) {
+      showCoverFallback()
+      return
+    }
+    coverImg.hidden = false
+    if (coverFallback) coverFallback.hidden = true
+    coverImg.alt = book.title || ''
+    coverImg.src = url
+  }
+
   coverImg.addEventListener('error', () => {
-    coverImg.remove()
+    showCoverFallback()
   })
+
+  tryCoverImage(book.coverUrl || '')
 
   el.querySelector('.book-card__title-text').textContent = book.title
   el.querySelector('.book-card__author').textContent = book.author || 'Unknown author'
@@ -45,8 +71,22 @@ export function BookCard({ book }) {
   btn.addEventListener('click', (e) => {
     e.preventDefault()
     e.stopPropagation()
+    const wasFavorite = isFavorite(book.id)
     toggleFavorite(book)
     syncBookmarkButton(btn, iconEl, book.id)
+    const changed = wasFavorite !== isFavorite(book.id)
+    if (changed) {
+      btn.classList.remove('book-card__bookmark--pulse')
+      void btn.offsetWidth
+      btn.classList.add('book-card__bookmark--pulse')
+      btn.addEventListener(
+        'animationend',
+        () => {
+          btn.classList.remove('book-card__bookmark--pulse')
+        },
+        { once: true },
+      )
+    }
   })
 
   return el

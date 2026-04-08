@@ -27,8 +27,10 @@ function readRaw() {
   }
 }
 
+const SEARCH_MODE_VALUES = new Set(['title', 'author', 'subject'])
+
 /**
- * @returns {{ query: string, firstPage: SearchBook[] } | null}
+ * @returns {{ query: string, firstPage: SearchBook[], searchMode: 'title'|'author'|'subject' } | null}
  */
 export function readSearchSnapshot() {
   try {
@@ -42,16 +44,17 @@ export function readSearchSnapshot() {
     const firstPage = o.firstPage
       .filter((b) => b != null && b.id != null && String(b.id).trim() !== '')
       .map((b) => ({ ...b, id: String(b.id) }))
-    return { query, firstPage }
+    const searchMode = SEARCH_MODE_VALUES.has(o.searchMode) ? o.searchMode : 'title'
+    return { query, firstPage, searchMode }
   } catch {
     return null
   }
 }
 
 /**
- * @param {{ query: string, firstPage: SearchBook[] }} snapshot
+ * @param {{ query: string, firstPage: SearchBook[], searchMode?: 'title'|'author'|'subject' }} snapshot
  */
-export function writeSearchSnapshot({ query, firstPage }) {
+export function writeSearchSnapshot({ query, firstPage, searchMode = 'title' }) {
   const q = String(query ?? '').trim()
   if (!q) {
     try {
@@ -62,11 +65,13 @@ export function writeSearchSnapshot({ query, firstPage }) {
     }
     return
   }
+  const mode = SEARCH_MODE_VALUES.has(searchMode) ? searchMode : 'title'
   let payload
   try {
     payload = JSON.stringify({
       query: q,
       firstPage: Array.isArray(firstPage) ? firstPage : [],
+      searchMode: mode,
     })
   } catch {
     return

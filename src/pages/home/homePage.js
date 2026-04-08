@@ -2,7 +2,8 @@ import './homePage.css'
 import { BookCard } from '../../components/BookCard/BookCard.js'
 import { Favorites } from '../../components/Favorites/Favorites.js'
 import { Search } from '../../components/Search/Search.js'
-import { searchBooksByTitle } from '../../api/openLibrary.js'
+import { ThemeToggle } from '../../components/ThemeToggle/ThemeToggle.js'
+import { searchBooks } from '../../api/openLibrary.js'
 import { FAVORITES_CHANGED_EVENT, isFavorite } from '../../storage/favoritesStorage.js'
 import {
   clearSearchSnapshot,
@@ -54,11 +55,17 @@ function syncBookmarkButtonsInGrid(grid) {
 export function mountHomePage(root) {
   root.innerHTML = homeShellHtml.replace('{{PROJECT_NAME}}', PROJECT_NAME)
 
+  const favoritesAbort = new AbortController()
+
+  const themeMount = root.querySelector('#topbarThemeMount')
+  if (themeMount) {
+    themeMount.replaceWith(ThemeToggle({ signal: favoritesAbort.signal }))
+  }
+
   const grid = root.querySelector('#booksGrid')
   const loadingHost = root.querySelector('#booksLoadingHost')
   const searchMount = root.querySelector('#heroSearchMount')
   const favoritesMount = root.querySelector('#heroFavoritesMount')
-  const favoritesAbort = new AbortController()
   if (favoritesMount) {
     favoritesMount.append(Favorites({ signal: favoritesAbort.signal }))
   }
@@ -73,6 +80,8 @@ export function mountHomePage(root) {
     query: '',
     page: 1,
     limit: 12,
+    /** @type {'title'|'author'|'subject'} */
+    searchMode: 'title',
     loading: false,
     hasMore: true,
     seenIds: new Set(),
@@ -191,6 +200,7 @@ export function mountHomePage(root) {
 
   if (snapshot?.query) {
     state.query = snapshot.query
+    state.searchMode = snapshot.searchMode
     state.seenIds = new Set()
     if (snapshot.firstPage.length > 0) {
       state.page = 2
@@ -213,7 +223,14 @@ export function mountHomePage(root) {
   searchMount.append(
     Search({
       onInput: scheduleSearchFromInput,
+      onSearchModeChange: (mode, raw) => {
+        state.searchMode = mode
+        ignoreInputMatchingRestoredQuery = false
+        if (!raw.trim()) return
+        applySearchFromInput(raw)
+      },
       initialValue: snapshot?.query ?? '',
+      initialSearchMode: snapshot?.searchMode ?? 'title',
       inputBindDelayMs: snapshot?.query ? 400 : 0,
       signal: favoritesAbort.signal,
     }),
@@ -235,7 +252,8 @@ export function mountHomePage(root) {
     renderBottomLoading(true)
 
     try {
-      const books = await searchBooksByTitle(q, {
+      const books = await searchBooks(q, {
+        mode: state.searchMode,
         limit: state.limit,
         page: state.page,
         signal,
@@ -246,7 +264,7 @@ export function mountHomePage(root) {
       if (books.length === 0) {
         state.hasMore = false
         if (state.page === 1) {
-          writeSearchSnapshot({ query: q, firstPage: [] })
+          writeSearchSnapshot({ query: q, firstPage: [], searchMode: state.searchMode })
           renderNotFound()
         }
         return
@@ -266,7 +284,7 @@ export function mountHomePage(root) {
         } catch {
           /* keep reference */
         }
-        writeSearchSnapshot({ query: q, firstPage: stored })
+        writeSearchSnapshot({ query: q, firstPage: stored, searchMode: state.searchMode })
       }
 
       state.page += 1

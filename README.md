@@ -32,6 +32,17 @@ Specification (internship assignment — simple book catalog):
 
 Requires [Node.js](https://nodejs.org/) with npm. No API keys are needed for the Open Library API.
 
+## Deploy (GitHub Pages)
+
+This project is configured to deploy from `main` via GitHub Actions to GitHub Pages.
+
+- Repository pages URL: `https://zayatsmaxim.github.io/books-app-zayats/`
+- Workflow: `.github/workflows/deploy.yml`
+
+Important: GitHub Pages serves the site from a subpath, so `vite.config.js` sets:
+
+- `base: '/books-app-zayats/'`
+
 ## App structure
 
 | Location | Role |

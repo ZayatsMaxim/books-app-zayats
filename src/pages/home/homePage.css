@@ -10,7 +10,7 @@
   background: color-mix(in oklab, var(--bg) 92%, var(--code-bg));
   position: sticky;
   top: 0;
-  /* выше .favorites (21) и выпадающей панели (22), иначе при скролле избранное наезжает на шапку */
+  /* Above .favorites (21) and its dropdown panel (22) while scrolling. */
   z-index: 50;
 }
 
@@ -161,7 +161,7 @@ main.container {
   }
 }
 
-/* Пустой запрос / не найдено / ошибка: по центру и по вертикали, и по горизонтали в секции */
+/* Empty query / not found / error: center both vertically and horizontally. */
 .books-grid.books-grid--empty,
 .books-grid.books-grid--not-found,
 .books-grid.books-grid--error {

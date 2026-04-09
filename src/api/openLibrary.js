@@ -44,8 +44,13 @@ function searchQueryParam(mode) {
   return 'title'
 }
 
-/** Набор полей ответа зависит от режима (релевантные Solr-поля). */
-/** @param {SearchMode} mode */
+/**
+ * Pick Open Library response fields for the given search mode.
+ * Different modes have different relevant Solr fields.
+ *
+ * @param {SearchMode} mode Search mode.
+ * @returns {string} Comma-separated `fields` value.
+ */
 function fieldsForMode(mode) {
   const base = 'key,title,author_name,first_publish_year,cover_i,edition_count'
   if (mode === 'author') return `${base},author_key`
@@ -54,10 +59,11 @@ function fieldsForMode(mode) {
 }
 
 /**
- * Поиск по Open Library: в запросе один из параметров title / author / subject и свой `fields`.
+ * Search Open Library using a mode-specific query param and fields set.
  *
- * @param {string} query
- * @param {{ mode?: SearchMode, limit?: number, page?: number, signal?: AbortSignal }} [options]
+ * @param {string} query Free-text query (trimmed; empty query returns []).
+ * @param {{ mode?: SearchMode, limit?: number, page?: number, signal?: AbortSignal }} [options] Search options.
+ * @returns {Promise<Array<{ id: string, title: string, author: string | null, year: number | null, coverId: number | null, coverUrl: string | null }>>}
  */
 export async function searchBooks(query, { mode = 'title', limit = 24, page = 1, signal } = {}) {
   const q = String(query ?? '').trim()

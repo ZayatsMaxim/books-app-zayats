@@ -5,7 +5,11 @@ import { FAVORITES_CHANGED_EVENT, getFavorites } from '../../storage/favoritesSt
 import favoritesShellHtml from './html/favorites.shell.html?raw'
 
 /**
- * @param {{ signal?: AbortSignal }} [options]
+ * Favorites panel (collapsible).
+ *
+ * @param {object} [options]
+ * @param {AbortSignal} [options.signal] Optional abort signal for cleanup.
+ * @returns {HTMLDivElement} Root element.
  */
 export function Favorites({ signal } = {}) {
   const root = document.createElement('div')

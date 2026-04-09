@@ -90,7 +90,7 @@
   transform: rotate(180deg);
 }
 
-/* Как у .favorites__panel-clip: раскрытие по высоте + opacity */
+/* Same as .favorites__panel-clip: height reveal + opacity. */
 .search__mode-menu-clip {
   position: absolute;
   left: 0;

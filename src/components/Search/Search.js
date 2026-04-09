@@ -26,9 +26,12 @@ export const SEARCH_UI_MODES = /** @type {const} */ ([
 ])
 
 /**
- * @param {HTMLInputElement} input
- * @param {HTMLSpanElement} triggerLabel
- * @param {{ placeholder: string, inputAriaLabel: string, label: string }} def
+ * Apply the selected search mode to the input and trigger UI.
+ *
+ * @param {HTMLInputElement} input Search input element.
+ * @param {HTMLSpanElement} triggerLabel Label element inside the mode trigger button.
+ * @param {{ placeholder: string, inputAriaLabel: string, label: string }} def Mode definition.
+ * @returns {void}
  */
 function applyModeToUi(input, triggerLabel, def) {
   input.placeholder = def.placeholder
@@ -37,7 +40,17 @@ function applyModeToUi(input, triggerLabel, def) {
 }
 
 /**
- * @param {{ onInput?: (value: string) => void, onSearchModeChange?: (mode: SearchMode, value: string) => void, initialValue?: string, initialSearchMode?: SearchMode, inputBindDelayMs?: number, signal?: AbortSignal }} [options]
+ * Search input + mode selector.
+ *
+ * @param {object} [options]
+ * @param {(value: string) => void} [options.onInput] Called on input changes (raw string).
+ * @param {(mode: SearchMode, value: string) => void} [options.onSearchModeChange]
+ * Called when the user selects a new search mode.
+ * @param {string} [options.initialValue] Initial input value.
+ * @param {SearchMode} [options.initialSearchMode] Initial selected mode.
+ * @param {number} [options.inputBindDelayMs] Delay before attaching the input listener (ms).
+ * @param {AbortSignal} [options.signal] Optional abort signal for cleanup.
+ * @returns {HTMLDivElement} Root element.
  */
 export function Search({
   onInput,

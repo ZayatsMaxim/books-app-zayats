@@ -1,8 +1,11 @@
 const STORAGE_KEY = 'books-app-zayats-last-search'
 
 /**
- * Одна и та же фраза в поле и в snapshot может отличаться пробелами/NBSP — для сравнения без лишнего перезапроса API.
- * @param {string | null | undefined} s
+ * Normalize a query string for equality checks.
+ * The same phrase can differ by whitespace or NBSP, so this prevents unnecessary refetches.
+ *
+ * @param {string | null | undefined} s Raw query value (can be null/undefined).
+ * @returns {string} Normalized query string.
  */
 export function normalizeSearchQueryForCompare(s) {
   return String(s ?? '')
@@ -30,6 +33,8 @@ function readRaw() {
 const SEARCH_MODE_VALUES = new Set(['title', 'author', 'subject'])
 
 /**
+ * Read a persisted search snapshot (used to restore UI state after reload).
+ *
  * @returns {{ query: string, firstPage: SearchBook[], searchMode: 'title'|'author'|'subject' } | null}
  */
 export function readSearchSnapshot() {
@@ -52,7 +57,10 @@ export function readSearchSnapshot() {
 }
 
 /**
- * @param {{ query: string, firstPage: SearchBook[], searchMode?: 'title'|'author'|'subject' }} snapshot
+ * Persist a search snapshot to localStorage (falls back to sessionStorage on quota errors).
+ *
+ * @param {{ query: string, firstPage: SearchBook[], searchMode?: 'title'|'author'|'subject' }} snapshot Snapshot payload.
+ * @returns {void}
  */
 export function writeSearchSnapshot({ query, firstPage, searchMode = 'title' }) {
   const q = String(query ?? '').trim()

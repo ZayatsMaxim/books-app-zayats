@@ -132,7 +132,7 @@
   user-select: none;
 }
 
-/* material-icons задаёт display; [hidden] и hidden-атрибут часто не перебивают — скрываем явно */
+/* Material Icons sets display; hidden attributes can be overridden, so force-hide explicitly. */
 .favorite-book-list__icon--hidden {
   display: none !important;
 }

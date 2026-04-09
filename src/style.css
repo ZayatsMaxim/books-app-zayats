@@ -23,7 +23,7 @@
 
 /* Theme overrides live in src/themes/*.css */
 
-/* Плавное переключение темы (View Transitions API) */
+/* Smooth theme switch (View Transitions API). */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 0.35s;
@@ -36,7 +36,7 @@
   box-sizing: border-box;
 }
 
-/* Резерв под вертикальный скроллбар — без горизонтального сдвига при появлении прокрутки */
+/* Reserve space for the vertical scrollbar to avoid layout shift. */
 html {
   scrollbar-gutter: stable;
 }
@@ -68,7 +68,7 @@ h2 {
 }
 
 /* Utility: shimmer used by home page placeholders and card skeletons */
-/* linear: без замедления на стыке цикла; ease-in-out даёт рывок при infinite */
+/* linear: avoids a visible slow-down at the loop seam (ease-in-out can \"snap\" in infinite). */
 .skeleton {
   background: linear-gradient(
     100deg,
@@ -82,7 +82,7 @@ h2 {
   animation: skeleton-shimmer 3.2s linear infinite;
 }
 
-/* Один полный проход фона за цикл — стык 0%/100% менее заметен при linear */
+/* One full pass per cycle makes the 0%/100% seam less noticeable with linear timing. */
 @keyframes skeleton-shimmer {
   0% {
     background-position: 200% 0;

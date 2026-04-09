@@ -1,4 +1,4 @@
-/* Тёмная тема — те же токены, что в классе .dark у shadcn; включается через html.theme-dark */
+/* Dark theme (same token set as shadcn's .dark); enabled via html.theme-dark. */
 
 :root.theme-dark {
   color-scheme: dark;

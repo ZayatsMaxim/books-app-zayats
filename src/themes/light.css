@@ -1,4 +1,4 @@
-/* Светлая тема (токены в духе shadcn / OKLCH, без Tailwind) */
+/* Light theme (shadcn-style tokens in OKLCH, no Tailwind). */
 
 :root {
   color-scheme: light;
@@ -63,7 +63,7 @@
   --tracking-normal: -0.01em;
   --spacing: 0.25rem;
 
-  /* Совместимость с существующими компонентами приложения */
+  /* Compatibility aliases for existing app components. */
   --text: var(--muted-foreground);
   --text-h: var(--foreground);
   --bg: var(--background);

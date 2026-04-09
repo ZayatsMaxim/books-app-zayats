@@ -16,7 +16,7 @@
   overflow: hidden;
 }
 
-/* Иначе фон перебивает градиент и анимацию из .skeleton (style.css) */
+/* Prevent the skeleton background from overriding the cover background. */
 .book-card__cover:not(.skeleton) {
   background: color-mix(in oklab, var(--border) 30%, var(--bg));
 }
@@ -161,25 +161,25 @@
   row-gap: 6px;
 }
 
-/* Skeleton: те же три строки, что и описание (заголовок / автор / год) */
+/* Skeleton: matches the three text rows (title / author / year). */
 .book-card__skel-line {
   border-radius: 8px;
   max-width: 100%;
 }
 
-/* как .book-card__title-text: 16px, line-height 1.2 */
+/* Same height as .book-card__title-text (16px, line-height 1.2). */
 .book-card__skel-line--title {
   height: calc(16px * 1.2);
   width: 92%;
 }
 
-/* как .book-card__author: 13px */
+/* Same height as .book-card__author (13px). */
 .book-card__skel-line--author {
   height: 13px;
   width: 88%;
 }
 
-/* как .book-card__year: 13px, короче */
+/* Same height as .book-card__year (13px), but shorter width. */
 .book-card__skel-line--year {
   height: 13px;
   width: 40%;

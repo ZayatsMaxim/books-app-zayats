@@ -1,6 +1,9 @@
 /**
- * Стабильный hue 0–359 для градиента плейсхолдера обложки.
- * @param {string | null | undefined} id
+ * Compute a stable hue (0–359) from a string id.
+ * Used to generate deterministic cover placeholder gradients.
+ *
+ * @param {string | null | undefined} id Stable identifier (e.g. Open Library work key).
+ * @returns {number} Hue value in the range 0..359.
  */
 export function hueFromId(id) {
   const s = String(id ?? '')

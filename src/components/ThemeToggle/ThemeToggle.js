@@ -8,7 +8,11 @@ function isDarkPreferred() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-/** Вызвать до первого рендера, чтобы не было мигания темы. */
+/**
+ * Initialize theme before the app renders to avoid a theme flash.
+ *
+ * @returns {void}
+ */
 export function initThemeBeforePaint() {
   let dark = false
   try {
@@ -26,9 +30,11 @@ const tpl = document.createElement('template')
 tpl.innerHTML = themeToggleHtml.trim()
 
 /**
- * Переключатель светлой/тёмной темы (localStorage + View Transition / opacity fallback).
- * @param {{ signal?: AbortSignal }} [options]
- * @returns {HTMLButtonElement}
+ * Light/dark theme toggle (localStorage + View Transition / opacity fallback).
+ *
+ * @param {object} [options]
+ * @param {AbortSignal} [options.signal] Optional abort signal for cleanup.
+ * @returns {HTMLButtonElement} Root element.
  */
 export function ThemeToggle({ signal } = {}) {
   const btn = /** @type {HTMLButtonElement} */ (tpl.content.firstElementChild.cloneNode(true))
